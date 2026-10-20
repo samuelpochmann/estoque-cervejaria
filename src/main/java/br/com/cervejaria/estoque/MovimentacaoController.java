@@ -14,14 +14,14 @@ public class MovimentacaoController {
     public MovimentacaoController(MovimentacaoService service) { this.service = service; }
 
     @GetMapping
-    public List<Movimentacao> listar() { return service.listar(); }
+    public List<MovimentacaoResponse> listar() { return service.listar(); }
 
     @GetMapping("/{id}")
-    public Movimentacao buscar(@PathVariable Long id) { return service.buscar(id); }
+    public MovimentacaoResponse buscar(@PathVariable Long id) { return service.buscar(id); }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Movimentacao registrar(@Valid @RequestBody MovimentacaoRequest req) {
+    public MovimentacaoResponse registrar(@Valid @RequestBody MovimentacaoRequest req) {
         return service.registrar(req);
     }
 

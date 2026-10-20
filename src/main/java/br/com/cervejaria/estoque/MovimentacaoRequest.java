@@ -1,19 +1,13 @@
 package br.com.cervejaria.estoque;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public record MovimentacaoRequest(
 
-    @NotNull
-    Long insumoId,
-
-    @NotNull
-    TipoMovimentacao tipo,
-
-    @NotNull
-    @DecimalMin("0.01")
-    BigDecimal quantidade,
-
-    String observacao
-){}
+    @NotNull(message = "é obrigatório") Long insumoId,
+    @NotNull(message = "é obrigatório") TipoMovimentacao tipo,
+    @NotNull(message = "é obrigatório")
+    @Positive(message = "deve ser maior que zero") BigDecimal quantidade,
+    String observacao) {}

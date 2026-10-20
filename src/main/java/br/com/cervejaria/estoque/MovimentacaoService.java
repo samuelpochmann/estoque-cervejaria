@@ -1,17 +1,12 @@
 package br.com.cervejaria.estoque;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 
 @Service
-@Getter @Setter
 public class MovimentacaoService {
 
     private final MovimentacaoRepository movRepo;
@@ -22,26 +17,28 @@ public class MovimentacaoService {
         this.insumoRepo = insumoRepo;
     }
 
-    public List<Movimentacao> listar() {
-        return movRepo.findAllByOrderByDataDesc();
+    @Transactional(readOnly = true)
+    public List<MovimentacaoResponse> listar() {
+        return movRepo.findAllByOrderByDataDesc().stream().map(MovimentacaoResponse::from).toList();
     }
 
-    public Movimentacao buscar(Long id) {
-        return movRepo.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Movimentação não encontrada"));
+    @Transactional(readOnly = true)
+    public MovimentacaoResponse buscar(Long id) {
+        return MovimentacaoResponse.from(buscarEntidade(id));
     }
 
     @Transactional
-    public Movimentacao registrar(MovimentacaoRequest req) {
+    public MovimentacaoResponse registrar(MovimentacaoRequest req) {
         Insumo insumo = insumoRepo.findById(req.insumoId()).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Insumo não encontrado"));
+                new RecursoNaoEncontradoException("Insumo não encontrado: " + req.insumoId()));
 
         BigDecimal novoSaldo = req.tipo() == TipoMovimentacao.ENTRADA
                 ? insumo.getQuantidadeAtual().add(req.quantidade())
                 : insumo.getQuantidadeAtual().subtract(req.quantidade());
 
         if (novoSaldo.signum() < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estoque insuficiente");
+            throw new RegraNegocioException("Estoque insuficiente de " + insumo.getNome()
+                    + ": saldo atual " + insumo.getQuantidadeAtual() + " " + insumo.getUnidade());
         }
 
         insumo.setQuantidadeAtual(novoSaldo);
@@ -52,13 +49,13 @@ public class MovimentacaoService {
         m.setQuantidade(req.quantidade());
         m.setObservacao(req.observacao());
         m.setData(LocalDateTime.now());
-        return movRepo.save(m);
+        return MovimentacaoResponse.from(movRepo.save(m));
     }
 
     /** "Excluir" uma movimentação = estornar: desfaz o efeito no saldo. */
     @Transactional
     public void estornar(Long id) {
-        Movimentacao m = buscar(id);
+        Movimentacao m = buscarEntidade(id);
         Insumo insumo = m.getInsumo();
 
         BigDecimal novoSaldo = m.getTipo() == TipoMovimentacao.ENTRADA
@@ -66,11 +63,16 @@ public class MovimentacaoService {
                 : insumo.getQuantidadeAtual().add(m.getQuantidade());
 
         if (novoSaldo.signum() < 0) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Não é possível estornar: o saldo ficaria negativo");
+            throw new ConflitoException("Não é possível estornar: o saldo de "
+                    + insumo.getNome() + " ficaria negativo");
         }
 
         insumo.setQuantidadeAtual(novoSaldo);
         movRepo.delete(m);
+    }
+
+    private Movimentacao buscarEntidade(Long id) {
+        return movRepo.findById(id).orElseThrow(() ->
+                new RecursoNaoEncontradoException("Movimentação não encontrada: " + id));
     }
 }
