@@ -1,10 +1,4 @@
 package br.com.cervejaria.estoque.exception;
-import br.com.cervejaria.estoque.model.*;
-import br.com.cervejaria.estoque.repository.*;
-import br.com.cervejaria.estoque.service.*;
-import br.com.cervejaria.estoque.controller.*;
-import br.com.cervejaria.estoque.dto.*;
-import br.com.cervejaria.estoque.exception.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -23,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@RestControllerAdvice
+@RestControllerAdvice //faz a classe interceptar exceções de todos os controllers.
 
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
