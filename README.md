@@ -67,27 +67,23 @@ CREATE DATABASE cervejaria OWNER cerveja;
 
 ## 🚀 Como rodar
 
-```bash
-git clone https://github.com/samuelpochmann/estoque-cervejaria.git
-cd estoque-cervejaria
+### Com Docker (recomendado)
 
-./mvnw spring-boot:run
+Requer apenas Docker e Git.
+
+```bash
+git clone https://github.com/SEU_USUARIO/estoque-cervejaria.git
+cd estoque-cervejaria
+docker compose up -d --build
 ```
 
-A API sobe em **http://localhost:8080**. As tabelas são criadas automaticamente na primeira execução.
+A API sobe em http://localhost:8080.
 
-### Configuração do banco
-
-Por padrão, a aplicação usa os valores abaixo. Para mudar, defina variáveis de ambiente:
-
-| Variável | Padrão |
-|---|---|
-| `DB_URL` | `jdbc:postgresql://localhost:5432/cervejaria` |
-| `DB_USER` | `cerveja` |
-| `DB_PASSWORD` | `cerveja123` |
+Para desenvolver, suba só o banco e rode a aplicação pela IDE:
 
 ```bash
-DB_PASSWORD=minha_senha ./mvnw spring-boot:run
+docker compose up -d db
+./mvnw spring-boot:run
 ```
 
 ## 📡 Endpoints
@@ -178,7 +174,7 @@ src/main/java/br/com/cervejaria/estoque/
 ## 🗺️ Roadmap
 
 - [ ] Interface web para uso sem `curl`
-- [ ] Docker Compose com a aplicação e o PostgreSQL
+- [x] Docker Compose com a aplicação e o PostgreSQL
 - [ ] Migrações com Flyway
 - [ ] Lote, validade, fornecedor e custo unitário
 - [ ] Cadastro de receitas com baixa automática de insumos na brassagem
