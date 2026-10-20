@@ -1,4 +1,10 @@
-package br.com.cervejaria.estoque;
+package br.com.cervejaria.estoque.model;
+import br.com.cervejaria.estoque.model.*;
+import br.com.cervejaria.estoque.repository.*;
+import br.com.cervejaria.estoque.service.*;
+import br.com.cervejaria.estoque.controller.*;
+import br.com.cervejaria.estoque.dto.*;
+import br.com.cervejaria.estoque.exception.*;
 
 import jakarta.persistence.*;
 import lombok.Getter;
