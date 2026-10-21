@@ -173,7 +173,7 @@ src/main/java/br/com/cervejaria/estoque/
 
 ## 🗺️ Roadmap
 
-- [ ] Interface web para uso sem `curl`
+- [x] Interface web para uso sem `curl`
 - [x] Docker Compose com a aplicação e o PostgreSQL
 - [ ] Migrações com Flyway
 - [ ] Lote, validade, fornecedor e custo unitário
